@@ -4,7 +4,7 @@
       <a-layout-header class="header">
         <GlobalHeader></GlobalHeader>
       </a-layout-header>
-      <a-layout-content class="content">Content
+      <a-layout-content class="content">
       <router-view></router-view>
       </a-layout-content>
       <a-layout-footer class="footer">
