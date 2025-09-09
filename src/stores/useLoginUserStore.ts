@@ -1,18 +1,19 @@
-import { ref, type Ref } from 'vue'
+import { ref } from 'vue'
 import { defineStore } from 'pinia'
+import { getLoginUserUsingGet } from '@/api/userController.ts'
 
 //存储登陆信息的状态
 export const useLoginUserStore = defineStore('loginUser', () => {
-  const loginUser: Ref<any, any> = ref<any>({
+  const loginUser = ref<API.LoginUserVo>({
     userName: '未登录',
   })
 
   //获取远程用户登录信息的
   async function fetchLoginUser() {
-    //假登录
-    setTimeout( () => {
-      loginUser.value = {userName: "测试登录", id: 1};
-    },3000)
+    const res = await getLoginUserUsingGet()
+    if (res.data.code === 0 && res.data.data) {
+      loginUser.value = res.data.data
+    }
   }
 
   //设置登录用户

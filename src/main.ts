@@ -6,6 +6,7 @@ import { createPinia } from 'pinia'
 // @ts-ignore
 import App from './App.vue'
 import router from './router'
+import '@/access.ts'
 
 const app = createApp(App)
 
