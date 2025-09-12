@@ -7,6 +7,8 @@
       <a-layout-content class="content">
       <router-view></router-view>
       </a-layout-content>
+      <div class="bottom">
+      </div>
       <a-layout-footer class="footer">
         <a target="_blank">图库网站</a>
       </a-layout-footer>
@@ -19,9 +21,13 @@ import GlobalHeader from "@/components/GlobalHeader.vue";
 </script>
 
 <style scoped>
+#basicLayout .bottom{
+  height: 20px;
+  width: 100px;
+}
 #basicLayout .footer{
   color: aqua;
-  padding: 70px;
+  padding: 20px;
   position: fixed;
   bottom: 0;
   right: 0;
@@ -31,7 +37,7 @@ import GlobalHeader from "@/components/GlobalHeader.vue";
 }
 #basicLayout .content{
   padding: 16px;
-  background: beige;
+  background: white;
   margin-bottom: 20px;
 }
 #basicLayout .header{
