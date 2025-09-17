@@ -3,8 +3,16 @@
     <h2 style="margin-bottom: 16px">
       {{route.query?.id ? '编辑图片' : '创建图片'}}
     </h2>
-<!--    图片上传组件-->
-    <PictureUpload :picture = "picture" :on-success="onSuccess"></PictureUpload>
+    <!-- 选择上传方式 -->
+    <a-tabs v-model:activeKey="uploadType"
+    >>
+      <a-tab-pane key="file" tab="文件上传">
+        <PictureUpload :picture="picture" :onSuccess="onSuccess" />
+      </a-tab-pane>
+      <a-tab-pane key="url" tab="URL 上传" force-render>
+        <UrlPictureUpload :picture="picture" :onSuccess="onSuccess" />
+      </a-tab-pane>
+    </a-tabs>
 <!--    图片信息表单-->
     <a-form v-if="picture" name="pictureForm" layout="vertical" :model="pictureForm" @finish="handleSubmit">
       <a-form-item name="name" label="名称">
@@ -39,6 +47,7 @@
 
 <script setup lang="ts">
 import PictureUpload from '@/components/PictureUpload.vue'
+import UrlPictureUpload from '@/components/UrlPictureUpload.vue'
 import { onMounted, reactive, ref } from 'vue'
 import { userLoginUsingPost } from '@/api/userController.ts'
 import { message } from 'ant-design-vue'
@@ -51,7 +60,7 @@ import {
 import { useRoute, useRouter } from 'vue-router'
 
 
-
+const uploadType = ref<'file' | 'url'>('file')
 const router = useRouter()
 const picture = ref<API.PictureVO>()
 const pictureForm = reactive<API.PictureEditRequest>({})

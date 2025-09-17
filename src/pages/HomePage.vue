@@ -45,7 +45,8 @@
             <img
               style="height: 180px; object-fit: cover"
               :alt="picture.name"
-              :src="picture.url"
+              :src="picture.thumbnailUrl ?? picture.url"
+              loading="lazy"
             />
           </template>
           <a-card-meta :title="picture.name">
@@ -87,7 +88,7 @@ const loading = ref(true)
 // 搜索条件
 const searchParams = reactive<API.PictureQueryRequest>({
   current: 1,
-  pageSize: 12,
+  pageSize: 15,
   sortField: 'createTime',
   sortOrder: 'descend',
 })
