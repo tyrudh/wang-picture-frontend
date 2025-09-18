@@ -4,9 +4,12 @@
       <a-layout-header class="header">
         <GlobalHeader></GlobalHeader>
       </a-layout-header>
+    <a-layout>
+      <GlobalSider class="sider" />
       <a-layout-content class="content">
-      <router-view></router-view>
+        <router-view></router-view>
       </a-layout-content>
+    </a-layout>
       <div class="bottom">
       </div>
       <a-layout-footer class="footer">
@@ -18,6 +21,7 @@
 
 <script setup lang="ts">
 import GlobalHeader from "@/components/GlobalHeader.vue";
+import GlobalSider from "@/components/GlobalSider.vue";
 </script>
 
 <style scoped>
@@ -45,5 +49,23 @@ import GlobalHeader from "@/components/GlobalHeader.vue";
   background: white;
   color: unset;
   margin-bottom: 16px;
+}
+#basicLayout .header {
+  margin-bottom: 1px;
+}
+
+#basicLayout .content {
+  padding: 28px;
+}
+
+#basicLayout .sider {
+  background: #fff;
+  padding-top: 20px;
+  border-right: 0.5px solid #eee;
+}
+
+#basicLayout :deep(.ant-menu-root) {
+  border-bottom: none !important;
+  border-inline-end: none !important;
 }
 </style>

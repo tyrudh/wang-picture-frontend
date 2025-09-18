@@ -24,6 +24,7 @@ import { uploadPictureUsingPost } from '@/api/pictureController.ts'
 
 interface Props{
   picture?: API.PictureVO;
+  spaceId?: string
   onSuccess?: (picture: API.PictureVO) => void;
 }
 const props = defineProps<Props>();
@@ -33,7 +34,8 @@ const props = defineProps<Props>();
 const handleUpload = async ({file}: any) => {
   try {
     loading.value = true;
-    const params = props.picture ? {id: props.picture.id}: {};
+    const params: API.PictureUploadRequest = props.picture ? {id: props.picture.id}: {};
+    params.spaceId = props.spaceId;
     const res = await uploadPictureUsingPost(params, {}, file)
     if(res.data.data && res.data.code === 0){
       message.success('上传成功');
