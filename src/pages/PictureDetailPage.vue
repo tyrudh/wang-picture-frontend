@@ -1,14 +1,10 @@
 <template>
   <div id="pictureDetailPage">
-
     <a-row :gutter="[16, 16]">
       <!-- 图片展示区 -->
       <a-col :sm="24" :md="16" :xl="18">
         <a-card title="图片预览">
-          <a-image
-            style="max-height: 600px; object-fit: contain"
-            :src="picture.url"
-          />
+          <a-image style="max-height: 600px; object-fit: contain" :src="picture.url" />
         </a-card>
       </a-col>
       <!-- 图片信息区 -->
@@ -50,31 +46,77 @@
             <a-descriptions-item label="大小">
               {{ formatSize(picture.picSize) }}
             </a-descriptions-item>
-            <a-space wrap>
-              <a-button v-if="canEdit" type="default" @click="doEdit">
-                编辑
-                <template #icon>
-                  <EditOutlined />
-                </template>
-              </a-button>
-              <a-button v-if="canEdit" danger @click="doDelete">
-                删除
-                <template #icon>
-                  <DeleteOutlined />
-                </template>
-              </a-button>
-              <a-button type="primary" @click="doDownload">
-                免费下载
-                <template #icon>
-                  <DownloadOutlined />
-                </template>
-              </a-button>
+            <a-descriptions-item label="主色调">
+              <a-space>
+                {{ picture.picColor ?? '-' }}
+                <div
+                  v-if="picture.picColor"
+                  :style="{
+                    backgroundColor: toHexColor(picture.picColor),
+                    width: '16px',
+                    height: '16px',
+                  }"
+                />
+              </a-space>
+            </a-descriptions-item>
+            <a-space direction="vertical" style="width: 100%">
+              <a-row :gutter="[8, 8]" justify="center">
+                <a-col>
+                  <a-button
+                    v-if="canEdit"
+                    type="default"
+                    @click="doEdit"                      style="width: 100%"
+                  >
+                    <template #icon>
+                      <EditOutlined />
+                    </template>
+                    编辑
+                  </a-button>
+                </a-col>
+                <a-col>
+                  <a-button
+                    v-if="canEdit"
+                    danger
+                    @click="doDelete"                      style="width: 100%"
+                  >
+                    <template #icon>
+                      <DeleteOutlined />
+                    </template>
+                    删除
+                  </a-button>
+                </a-col>
+              </a-row>
+              <a-row :gutter="[8, 8]" justify="center">
+                <a-col>
+                  <a-button
+                    type="primary"
+                    @click="doDownload"                      style="width: 100%"
+                  >
+                    <template #icon>
+                      <DownloadOutlined />
+                    </template>
+                    免费下载
+                  </a-button>
+                </a-col>
+                <a-col>
+                  <a-button
+                    type="primary"
+                    ghost
+                    @click="doShare"                      style="width: 100%"
+                  >
+                    <template #icon>
+                      <ShareAltOutlined />
+                    </template>
+                    分享
+                  </a-button>
+                </a-col>
+              </a-row>
             </a-space>
           </a-descriptions>
-
         </a-card>
       </a-col>
     </a-row>
+    <ShareModal ref="shareModalRef" :link="shareLink" />
   </div>
 </template>
 
@@ -86,6 +128,8 @@ import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 import router from '@/router'
 import { downloadImage } from '@/utils'
 
+import { DeleteOutlined, EditOutlined, ShareAltOutlined } from '@ant-design/icons-vue'
+import ShareModal from '../components/ShareModal.vue'
 
 const props = defineProps<{
   id: string | number
@@ -115,7 +159,7 @@ onMounted(() => {
 const loginUserStore = useLoginUserStore()
 // 是否具有编辑权限
 const canEdit = computed(() => {
-  const loginUser = loginUserStore.loginUser;
+  const loginUser = loginUserStore.loginUser
   // 未登录不可编辑
   if (!loginUser.id) {
     return false
@@ -131,8 +175,8 @@ const doEdit = () => {
     path: '/add_picture',
     query: {
       id: picture.value.id,
-      spaceId: picture.value.spaceId
-    }
+      spaceId: picture.value.spaceId,
+    },
   })
 }
 // 删除
@@ -156,10 +200,32 @@ const formatSize = (size?: number) => {
   return (size / (1024 * 1024)).toFixed(2) + ' MB'
 }
 
-
 // 处理下载
 const doDownload = () => {
   downloadImage(picture.value.url)
+}
+const toHexColor = (input) => {
+  // 去掉 0x 前缀
+  const colorValue = input.startsWith('0x') ? input.slice(2) : input
+
+  // 将剩余部分解析为十六进制数，再转成 6 位十六进制字符串
+  const hexColor = parseInt(colorValue, 16).toString(16).padStart(6, '0')
+
+  // 返回标准 #RRGGBB 格式
+  return `#${hexColor}`
+}
+
+// 分享弹窗引用
+const shareModalRef = ref()
+// 分享链接
+const shareLink = ref<string>()
+
+// 分享
+const doShare = () => {
+  shareLink.value = `${window.location.protocol}//${window.location.host}/picture/${picture.value.id}`
+  if (shareModalRef.value) {
+    shareModalRef.value.openModal()
+  }
 }
 </script>
 
