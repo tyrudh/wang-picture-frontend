@@ -1,5 +1,7 @@
 <template>
   <div id="addPicturePage">
+    <ImageCropper imageUrl="https://avatars2.githubusercontent.com/u/15681693?s=460&v=4" />
+
     <h2 style="margin-bottom: 16px">
       {{route.query?.id ? '编辑图片' : '创建图片'}}
     </h2>
@@ -44,14 +46,38 @@
       <a-form-item>
         <a-button type="primary" html-type="submit" style="width: 100%">创建</a-button>
       </a-form-item>
+
     </a-form>
+    <div v-if="picture" class="edit-bar">
+      <a-space size="middle">
+        <a-button :icon="h(EditOutlined)" @click="doEditPicture">编辑图片</a-button>
+        <a-button type="primary" ghost :icon="h(FullscreenOutlined)" @click="doImagePainting">
+          AI 扩图
+        </a-button>
+      </a-space>
+      <ImageOutPainting
+        v-if="picture"
+        ref="imageOutPaintingRef"
+        :picture="picture"
+        :spaceId="spaceId"
+        :onSuccess="onImageOutPaintingSuccess"
+      />
+      <ImageCropper
+        ref="imageCropperRef"
+        :imageUrl="picture?.url"
+        :picture="picture"
+        :spaceId="spaceId"
+        :onSuccess="onCropSuccess"
+      />
+    </div>
   </div>
+
 </template>
 
 <script setup lang="ts">
 import PictureUpload from '@/components/PictureUpload.vue'
 import UrlPictureUpload from '@/components/UrlPictureUpload.vue'
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, h, onMounted, reactive, ref } from 'vue'
 import { userLoginUsingPost } from '@/api/userController.ts'
 import { message } from 'ant-design-vue'
 import {
@@ -61,6 +87,9 @@ import {
 } from '@/api/pictureController.ts'
 
 import { useRoute, useRouter } from 'vue-router'
+import ImageCropper from '@/components/ImageCropper.vue'
+import { EditOutlined,FullscreenOutlined } from '@ant-design/icons-vue'
+import ImageOutPainting from '@/components/ImageOutPainting.vue'
 
 
 const uploadType = ref<'file' | 'url'>('file')
@@ -151,12 +180,44 @@ const getOldPicture = async () => {
 onMounted(()=>{
   getOldPicture();
 })
+// 图片编辑弹窗引用
+const imageCropperRef = ref()
 
+// 编辑图片
+const doEditPicture = () => {
+  if (imageCropperRef.value) {
+    imageCropperRef.value.openModal()
+  }
+}
+
+// 编辑成功事件
+const onCropSuccess = (newPicture: API.PictureVO) => {
+  picture.value = newPicture
+}
+
+// AI 扩图弹窗引用
+const imageOutPaintingRef = ref()
+
+// AI 扩图
+const doImagePainting = () => {
+  if (imageOutPaintingRef.value) {
+    imageOutPaintingRef.value.openModal()
+  }
+}
+
+// 编辑成功事件
+const onImageOutPaintingSuccess = (newPicture: API.PictureVO) => {
+  picture.value = newPicture
+}
 </script>
 
 <style scoped>
 #addPicturePage {
   max-width: 720px;
   margin: 0 auto;
+}
+#addPicturePage .edit-bar {
+  text-align: center;
+  margin: 16px 0;
 }
 </style>
