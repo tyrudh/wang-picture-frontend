@@ -82,7 +82,7 @@ import { userLoginUsingPost } from '@/api/userController.ts'
 import { message } from 'ant-design-vue'
 import {
   editPictureUsingPost,
-  getPictureByIdUsingGet,
+  getPictureByIdUsingGet, getPictureVoByIdUsingGet,
   listPictureTagCategoryUsingGet
 } from '@/api/pictureController.ts'
 
@@ -164,7 +164,7 @@ const route = useRoute();
 const getOldPicture = async () => {
   const id = route.query?.id
   if(id){
-    const res = await getPictureByIdUsingGet({
+    const res = await getPictureVoByIdUsingGet({
       id
     })
     if(res.data.code === 0 && res.data.data){

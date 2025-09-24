@@ -75,7 +75,7 @@
                 </a-col>
                 <a-col>
                   <a-button
-                    v-if="canEdit"
+                    v-if="canDelete"
                     danger
                     @click="doDelete"                      style="width: 100%"
                   >
@@ -89,11 +89,12 @@
               <a-row :gutter="[8, 8]" justify="center">
                 <a-col>
                   <a-button
+                    v-if="canEdit"
                     type="primary"
                     @click="doDownload"                      style="width: 100%"
                   >
                     <template #icon>
-                      <DownloadOutlined />
+                      <ShareAltOutlined />
                     </template>
                     免费下载
                   </a-button>
@@ -130,11 +131,22 @@ import { downloadImage } from '@/utils'
 
 import { DeleteOutlined, EditOutlined, ShareAltOutlined } from '@ant-design/icons-vue'
 import ShareModal from '../components/ShareModal.vue'
+import { SPACE_PERMISSION_ENUM } from '@/constants/space.ts'
 
 const props = defineProps<{
   id: string | number
 }>()
 const picture = ref<API.PictureVO>({})
+// 通用权限检查函数
+function createPermissionChecker(permission: string) {
+  return computed(() => {
+    return (picture.value.permissionList ?? []).includes(permission)
+  })
+}
+
+// 定义权限检查
+const canEdit = createPermissionChecker(SPACE_PERMISSION_ENUM.PICTURE_EDIT)
+const canDelete = createPermissionChecker(SPACE_PERMISSION_ENUM.PICTURE_DELETE)
 
 // 获取图片详情
 const fetchPictureDetail = async () => {
@@ -158,7 +170,7 @@ onMounted(() => {
 
 const loginUserStore = useLoginUserStore()
 // 是否具有编辑权限
-const canEdit = computed(() => {
+/*const canEdit = computed(() => {
   const loginUser = loginUserStore.loginUser
   // 未登录不可编辑
   if (!loginUser.id) {
@@ -167,10 +179,14 @@ const canEdit = computed(() => {
   // 仅本人或管理员可编辑
   const user = picture.value.user || {}
   return loginUser.id === user.id || loginUser.userRole === 'admin'
-})
-
+})*/
 // 编辑
 const doEdit = () => {
+  console.log(canEdit.value)
+  if (!canEdit) {
+    message.error('无权限编辑')
+    return
+  }
   router.push({
     path: '/add_picture',
     query: {

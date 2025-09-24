@@ -1,5 +1,5 @@
 <template>
-  <div id="userManagePage">
+  <div id="spaceManagePage">
 
     <a-flex justify="space-between">
       <h2>空间管理</h2>
@@ -33,6 +33,15 @@
       <a-form-item>
         <a-button type="primary" html-type="submit">搜索</a-button>
       </a-form-item>
+      <a-form-item label="空间类别" name="spaceType">
+        <a-select
+          v-model:value="searchParams.spaceType"
+          :options="SPACE_TYPE_OPTIONS"
+          placeholder="请输入空间类别"
+          style="min-width: 180px"
+          allow-clear
+        />
+      </a-form-item>
     </a-form>
 
     <div style="margin-top: 16px"></div>
@@ -42,6 +51,10 @@
         <!-- 空间级别 -->
         <template v-if="column.dataIndex === 'spaceLevel'">
           <a-tag>{{ SPACE_LEVEL_MAP[record.spaceLevel] }}</a-tag>
+        </template>
+        <!-- 空间类别 -->
+        <template v-if="column.dataIndex === 'spaceType'">
+          <a-tag>{{ SPACE_TYPE_MAP[record.spaceType] }}</a-tag>
         </template>
         <!-- 使用情况 -->
         <template v-if="column.dataIndex === 'spaceUseInfo'">
@@ -77,7 +90,7 @@ import {
   deleteSpaceUsingPost,
   listSpaceByPageUsingPost
 } from '@/api/spaceController.ts'
-import { SPACE_LEVEL_MAP, SPACE_LEVEL_OPTIONS } from '../../constants/space.ts'
+import { SPACE_LEVEL_MAP, SPACE_LEVEL_OPTIONS, SPACE_TYPE_MAP, SPACE_TYPE_OPTIONS } from '../../constants/space.ts'
 import { formatSize } from '../../utils'
 const columns = [
   {
@@ -92,6 +105,10 @@ const columns = [
   {
     title: '空间级别',
     dataIndex: 'spaceLevel',
+  },
+  {
+    title: '空间类别',
+    dataIndex: 'spaceType',
   },
   {
     title: '使用情况',
